@@ -1,18 +1,22 @@
 echo GO_BLOG
 cd ./go-blog
-make build
+GOOS=linux GOARCH=amd64 go build -o bin/backend .
+
 
 echo GO_ECOM
 cd ../go-ecom
-make build
+GOOS=linux GOARCH=amd64 go build -o bin/backend .
+
 
 echo GO_GATEWAY
 cd ../go-gateway
-make build
+GOOS=linux GOARCH=amd64 go build -o bin/backend .
+
 
 echo GO_SASS
 cd ../go-sass
-make build
+GOOS=linux GOARCH=amd64 go build -o bin/backend .
+
 
 cd ..
 ls

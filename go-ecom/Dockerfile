@@ -12,7 +12,7 @@ COPY ./bin/backend ./backend
 RUN chmod +x ./backend
 
 # Expose the port your application runs on
-EXPOSE 8080
+EXPOSE 8082
 
 
 # Run the application
