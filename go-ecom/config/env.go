@@ -20,6 +20,11 @@ func GetPort() string {
 }
 
 
+func DbUri() string {
+    return getEnv("DATABASE_URL","postgres://username:password@localhost:5432/mydb")
+}
+
+
 
 // getEnv retrieves an environment variable or returns a fallback value
 func getEnv(key string, fallback string) string {
