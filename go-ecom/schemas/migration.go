@@ -1,5 +1,5 @@
 package schemas
 
 var MigrationQueries = []string{
-	CreateUserTable,
+	CreateUserTable, CreateStoreTable,
 }
