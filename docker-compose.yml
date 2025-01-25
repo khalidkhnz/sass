@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  go-blog:
+    build:
+      context: ./go-blog
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-network
+
+  go-ecom:
+    build:
+      context: ./go-ecom
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-network
+
+  go-sass:
+    build:
+      context: ./go-sass
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-network
+
+  go-gateway:
+    build:
+      context: ./go-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - BLOG_SERVICE_URL=http://go-blog:8081
+      - ECOM_SERVICE_URL=http://go-ecom:8082
+      - SASS_SERVICE_URL=http://go-sass:8083
+      - BLOG_SERVICE_POSTFIX=/go-blog
+      - ECOM_SERVICE_POSTFIX=/go-ecom
+      - SASS_SERVICE_POSTFIX=/go-sass
+    depends_on:
+      - go-blog
+      - go-ecom
+      - go-sass
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge

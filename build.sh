@@ -19,7 +19,9 @@ GOOS=linux GOARCH=amd64 go build -o bin/backend .
 
 
 cd ..
-ls
+
+# docker-compose up
+# ls
 
 git add .
 git commit -m "DEPLOY:BUILD"

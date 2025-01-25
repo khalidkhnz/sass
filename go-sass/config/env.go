@@ -16,11 +16,7 @@ func InitEnv() {
 
 
 func GetPort() string {
-    return ":" + getEnv("PORT", "4000")
-}
-
-func GetAPIPrefix() string {
-    return getEnv("API_PREFIX", "/api/v1")
+    return ":" + getEnv("PORT", "8083")
 }
 
 
