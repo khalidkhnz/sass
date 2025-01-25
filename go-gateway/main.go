@@ -16,10 +16,15 @@ func main() {
 
 	fmt.Println("API GATEWAY IS UP AND RUNNING")
 
-	http.HandleFunc("/", proxyHandler)
+	// Create a new ServeMux
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", proxyHandler)
+
+	// Create handler chain with middleware
+	handler := LoggingMiddleware(mux)
 
 	log.Println("API Gateway is running on port 8080...")
-	log.Fatal(http.ListenAndServe(config.GetPort(), nil))
+	log.Fatal(http.ListenAndServe(config.GetPort(), handler))
 }
 
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
