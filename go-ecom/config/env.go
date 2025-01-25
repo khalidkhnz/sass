@@ -24,6 +24,9 @@ func DbUri() string {
     return getEnv("DATABASE_URL","postgres://username:password@localhost:5432/mydb")
 }
 
+func ApiPrefix() string {
+    return getEnv("API_PREFIX","/api/v1")
+}
 
 
 // getEnv retrieves an environment variable or returns a fallback value

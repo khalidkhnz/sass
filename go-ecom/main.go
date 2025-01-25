@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/khalidkhnz/sass/go-ecom/config"
+	"github.com/khalidkhnz/sass/go-ecom/dto"
 	"github.com/khalidkhnz/sass/go-ecom/schemas"
 	"github.com/khalidkhnz/sass/go-ecom/services"
 	"github.com/labstack/echo/v4"
@@ -24,12 +25,6 @@ type APIServer struct {
 }
 
 func (s *APIServer) listenAndServe() {
-	s.echo.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]any{
-			"success": true,
-			"message": "Hello From Go-Ecom",
-		})
-	})
 
 	if err := s.initDatabase(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
@@ -46,16 +41,21 @@ func (s *APIServer) listenAndServe() {
 
 
 func (s *APIServer) initMiddlewares() {
-	s.echo.Use(middleware.Logger())
+	// s.echo.Use(middleware.Logger())
 	s.echo.Use(middleware.Recover())
 	s.echo.Use(middleware.CORS())
 }
 
+
 func (s *APIServer) initRoutes() {
 	// Add route groups and handlers here
-	api := s.echo.Group("/api")
+	s.echo.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, dto.ApiSuccessMsg("Hello From Go-Ecom"))
+	})
+
+	api := s.echo.Group(config.ApiPrefix())
 	api.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"status": "healthy"})
+		return c.JSON(http.StatusOK, dto.ApiSuccessMsg("healthy"))
 	})
 }
 

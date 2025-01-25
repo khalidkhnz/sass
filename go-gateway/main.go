@@ -7,11 +7,13 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/khalidkhnz/sass/go-gateway/config"
 )
 
 func main() {
+	// Initialize environment variables
 	config.InitEnv()
 
 	fmt.Println("API GATEWAY IS UP AND RUNNING")
@@ -26,38 +28,42 @@ func main() {
 	log.Println("API Gateway is running on port 8080...")
 	log.Fatal(http.ListenAndServe(config.GetPort(), handler))
 }
-
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
-	// Define the backend services
-	routes := map[string]string{
-		config.GetBlogPostFix("/go-blog"): config.GetBlogUrl("http://localhost:8081"),
-		config.GetEcomPostFix("/go-ecom"): config.GetEcomUrl("http://localhost:8082"),
-		config.GetSassPostFix("go-sass"): config.GetSassUrl("http://localhost:8083"),
-	}
+	path := r.URL.Path
 
-	// Match the incoming request path
-	for route, backendURL := range routes {
-		if r.URL.Path == route {
-			proxyRequest(w, r, backendURL)
-			return
-		}
+	switch {
+	case strings.HasPrefix(path, "/go-blog"):
+		proxyRequest(w, r, config.GetBlogUrl("http://localhost:8081"),"/go-blog")
+	case strings.HasPrefix(path, "/go-ecom"):
+		proxyRequest(w, r, config.GetEcomUrl("http://localhost:8082"),"/go-ecom")
+	case strings.HasPrefix(path, "/go-sass"):
+		proxyRequest(w, r, config.GetSassUrl("http://localhost:8083"),"/go-sass")
+	default:
+		sendJSONError(w, http.StatusNotFound, "Route not found")
 	}
-
-	// Default response for unmatched paths
-	sendJSONError(w, http.StatusNotFound, "Route not found")
 }
-
-func proxyRequest(w http.ResponseWriter, r *http.Request, backendURL string) {
+func proxyRequest(w http.ResponseWriter, r *http.Request, backendURL string, havePrefix string) {
 	// Parse the backend URL
 	backend, err := url.Parse(backendURL)
 	if err != nil {
+		log.Printf("Invalid backend URL: %v\n", err)
 		sendJSONError(w, http.StatusInternalServerError, "Invalid backend URL")
 		return
 	}
 
+	// Remove service prefix from path
+	path := r.URL.Path
+	path = strings.TrimPrefix(path, havePrefix)
+
+	r.URL.Path = path
+
+	// Resolve the full backend URL, including query parameters
+	targetURL := backend.ResolveReference(r.URL)
+
 	// Create a new request to the backend service
-	proxyReq, err := http.NewRequest(r.Method, backend.String(), r.Body)
+	proxyReq, err := http.NewRequest(r.Method, targetURL.String(), r.Body)
 	if err != nil {
+		log.Printf("Failed to create proxy request: %v\n", err)
 		sendJSONError(w, http.StatusInternalServerError, "Failed to create proxy request")
 		return
 	}
@@ -65,10 +71,11 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, backendURL string) {
 	// Copy headers from the original request
 	proxyReq.Header = r.Header
 
-	// Forward the request to the backend
+	// Use an HTTP client to send the request
 	client := &http.Client{}
 	resp, err := client.Do(proxyReq)
 	if err != nil {
+		log.Printf("Failed to contact backend service: %v\n", err)
 		sendJSONError(w, http.StatusBadGateway, "Failed to contact backend service")
 		return
 	}
@@ -81,7 +88,10 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, backendURL string) {
 		}
 	}
 	w.WriteHeader(resp.StatusCode)
-	io.Copy(w, resp.Body)
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		log.Printf("Failed to write response body: %v\n", err)
+	}
 }
 
 func sendJSONError(w http.ResponseWriter, statusCode int, message string) {
@@ -93,5 +103,8 @@ func sendJSONError(w http.ResponseWriter, statusCode int, message string) {
 		"success": false,
 		"message": message,
 	}
-	json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		log.Printf("Failed to send JSON error response: %v\n", err)
+	}
 }
