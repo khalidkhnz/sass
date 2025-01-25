@@ -19,7 +19,7 @@ func main() {
 	http.HandleFunc("/", proxyHandler)
 
 	log.Println("API Gateway is running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(config.GetPort(), nil))
 }
 
 func proxyHandler(w http.ResponseWriter, r *http.Request) {

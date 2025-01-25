@@ -1,6 +1,7 @@
 build:
 	@echo "Building the backend..."
 	@go build -o bin/backend
+	# @GOOS=linux GOARCH=amd64 go build -o bin/backend .
 	@echo "Build completed."
 
 run: build
