@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/backend .
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 3000
 
 # Run the application
 CMD ["./backend"]

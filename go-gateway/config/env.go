@@ -16,7 +16,7 @@ func InitEnv() {
 
 
 func GetPort() string {
-    return ":" + getEnv("PORT", "8080")
+    return ":" + getEnv("PORT", "3000")
 }
 
 

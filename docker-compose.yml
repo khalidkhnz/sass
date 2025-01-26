@@ -45,7 +45,7 @@ services:
       context: ./go-gateway
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "3000:3000"
     environment:
       - BLOG_SERVICE_URL=http://go-blog:8081
       - ECOM_SERVICE_URL=http://go-ecom:8082

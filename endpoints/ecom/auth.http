@@ -1,5 +1,5 @@
 ###
-GET http://localhost:8080/go-ecom HTTP/1.1
+GET http://localhost:3000/go-ecom HTTP/1.1
 
 ###
-GET http://localhost:8080/go-ecom/api/v1/health HTTP/1.1
+GET http://localhost:3000/go-ecom/api/v1/health HTTP/1.1
