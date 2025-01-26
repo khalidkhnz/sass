@@ -20,6 +20,33 @@ func GetPort() string {
 }
 
 
+func GetBlogPostFix(fallback string) string {
+    return getEnv("BLOG_SERVICE_POSTFIX",fallback)
+}
+
+func GetBlogUrl(fallback string) string {
+    return getEnv("BLOG_SERVICE_URL",fallback)
+}
+
+func GetEcomPostFix(fallback string) string {
+    return getEnv("ECOM_SERVICE_POSTFIX",fallback)
+}
+
+func GetEcomUrl(fallback string) string {
+    return getEnv("ECOM_SERVICE_URL",fallback)
+}
+
+func GetSassPostFix(fallback string) string {
+    return getEnv("SASS_SERVICE_POSTFIX",fallback)
+}
+
+func GetSassUrl(fallback string) string {
+    return getEnv("SASS_SERVICE_URL",fallback)
+}
+
+
+
+
 // getEnv retrieves an environment variable or returns a fallback value
 func getEnv(key string, fallback string) string {
     if value := os.Getenv(key); value != "" {
