@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    environment:
+      - DATABASE_URL=postgres://postgres:root@postgres:5432/go-ecom
+    depends_on:
+      - postgres
     networks:
       - microservices-network
 
@@ -29,6 +33,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8083:8083"
+    environment:
+      - DATABASE_URL=postgres://postgres:root@postgres:5432/go-ecom
+    depends_on:
+      - postgres
     networks:
       - microservices-network
 
@@ -45,10 +53,12 @@ services:
       - BLOG_SERVICE_POSTFIX=/go-blog
       - ECOM_SERVICE_POSTFIX=/go-ecom
       - SASS_SERVICE_POSTFIX=/go-sass
+      - DATABASE_URL=postgres://postgres:root@postgres:5432/go-ecom
     depends_on:
       - go-blog
       - go-ecom
       - go-sass
+      - postgres
     networks:
       - microservices-network
 
