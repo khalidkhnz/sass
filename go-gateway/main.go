@@ -29,18 +29,18 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Environment Variables
-	blogService := os.Getenv("BLOG_SERVICE_URL")
-	ecomService := os.Getenv("ECOM_SERVICE_URL")
-	sassService := os.Getenv("SASS_SERVICE_URL")
+	blogService := config.GetBlogUrl("")
+	ecomService := config.GetEcomUrl("")
+	sassService := config.GetSassUrl("")
 
 	if blogService == "" || ecomService == "" || sassService == "" {
 		log.Fatal("Service URLs must be set in environment variables")
 	}
 
 	// Setup Proxy Groups
-	setupProxy(e, "/go-blog", blogService)
-	setupProxy(e, "/go-ecom", ecomService)
-	setupProxy(e, "/go-sass", sassService)
+	setupProxy(e, config.GetBlogPostFix("/go-blog"), blogService)
+	setupProxy(e, config.GetEcomPostFix("/go-ecom"), ecomService)
+	setupProxy(e, config.GetSassPostFix("/go-sass"), sassService)
 
 	// Health Check
 	e.GET("/health", func(c echo.Context) error {
